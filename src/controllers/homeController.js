@@ -1,7 +1,22 @@
 const db = require('../database.json');
 
 exports.getHomePage = (req, res) => {
-    res.render('index', { cubes: db.cubes });
+    let search = req.query.search;
+    let minLevel = Number(req.query.from);
+    let maxLevel = Number(req.query.to);
+    let cubes = db.cubes;
+
+    if (search) {
+        cubes = cubes.filter(c => c.name.toLowerCase().includes(search.toLowerCase()));
+        if (minLevel) {
+            cubes = cubes.filter(c => Number(c.difficultyLevel) >= minLevel);
+        }
+        if (maxLevel) {
+            cubes = cubes.filter(c => Number(c.difficultyLevel) <= maxLevel);
+        }
+    }
+
+    res.render('index', {cubes});
 };
 
 exports.getAboutPage = (req, res) => {
