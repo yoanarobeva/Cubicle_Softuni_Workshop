@@ -6,10 +6,7 @@ const homeController = require('./controllers/homeController');
 router.get('/', homeController.getHomePage);
 router.get('/about', homeController.getAboutPage);
 
-router.get('/create', cubeController.getCreateCube);
-router.post('/create', cubeController.postCreateCube);
-
-router.get('/details/:cubeId', cubeController.getDetail);
+router.use('/cube', cubeController);
 
 router.get('*/404', homeController.getErrorPage);
 

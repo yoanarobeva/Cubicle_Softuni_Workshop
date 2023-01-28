@@ -1,11 +1,11 @@
+const router = require('express').Router();
 const Cube = require('../models/Cube');
-const db = require('../database.json');
 
-exports.getCreateCube = (req, res) => {
-    res.render('create');
-}
+router.get('/create' ,(req, res) => {
+    res.render('cubes/create');
+});
 
-exports.postCreateCube = async (req, res) => {
+router.post('/create', async (req, res) => {
     let { name, description, imageUrl, difficultyLevel } = req.body;
 
     let cube = new Cube({ name, description, imageUrl, difficultyLevel });
@@ -13,15 +13,17 @@ exports.postCreateCube = async (req, res) => {
     await cube.save(cube);
 
     res.redirect('/');
-}
+})
 
-exports.getDetail = async (req, res) => {
+router.get('/details/:cubeId', async (req, res) => {
     let cube = await Cube.findById(req.params.cubeId).lean();
 
     if (cube) {
-        res.render('details', cube)
+        res.render('cubes/details', cube)
     } else {
         res.redirect('/404');
     }
-}
+})
+
+module.exports = router;
 
