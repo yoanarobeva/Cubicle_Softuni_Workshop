@@ -4,10 +4,10 @@
         <h2>{{cube.name}}</h2>
         <img class="cube" src={{cube.imageUrl}}>
         <form action="/cube/attach/{{cube._id}}" method="POST">
-            <label for="accessory">Accessories</label>
+           
 
             {{#if accessories}}
-            
+             <label for="accessory">Accessories</label>
              <select id="accessory" name="accessory" />
 
             {{#each accessories}}
