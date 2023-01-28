@@ -1,21 +1,28 @@
-const fs = require('fs');
-const db = require('../database.json');
-const path = require('path');
+const mongoose = require('mongoose');
 
-class Cube {
-    constructor(name, description, imageUrl, difficultyLevel) {
-        this.name = name;
-        this.description = description;
-        this.imageUrl = imageUrl;
-        this.difficultyLevel = difficultyLevel;
+const cubeSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+    },
+    description: {
+        type: String,
+        required: true,
+        maxLength: 50, //check real length
+    },
+    imageUrl: {
+        type: String,
+        required: true,
+        //add http/https validation
+    },
+    dificultyLevel: {
+        type: Number,
+        required: true,
+        min: 1,
+        max: 10
     }
+});
 
-    static save(cube) {
-        db.cubes.push(cube);
-
-        const jsonData = JSON.stringify(db, null, 2);
-        fs.writeFileSync(path.resolve(__dirname, '../database.json'), jsonData)
-    }
-}
+const Cube = mongoose.model('Cube', cubeSchema);
 
 module.exports = Cube;
