@@ -1,5 +1,4 @@
 <main>
-  {{#with cube}}
   <h1>{{name}}</h1>
   <img class="cube" src={{imageUrl}}>
   <div class="details">
@@ -8,10 +7,9 @@
     <a class="btn" href="/">Back</a>
     <a class="btn" href="/cube/attach/{{_id}}">Attach an Accessory</a>
   </div>
-  {{/with}}
   <h2>Accessories</h2>
   <div class="accessories">
-    {{#each cubeAccessories}}
+    {{#each accessories}}
 
     {{> accessoryCard}}
 

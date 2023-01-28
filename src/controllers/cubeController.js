@@ -17,11 +17,10 @@ router.post('/create', async (req, res) => {
 })
 
 router.get('/details/:cubeId', async (req, res) => {
-    let cube = await Cube.findById(req.params.cubeId).lean();
-    let cubeAccessories;
+    let cube = await Cube.findById(req.params.cubeId).populate('accessories').lean();
 
     if (cube) {
-        res.render('cubes/details', { cube, cubeAccessories })
+        res.render('cubes/details', cube);
     } else {
         res.redirect('/404');
     }
@@ -29,7 +28,7 @@ router.get('/details/:cubeId', async (req, res) => {
 
 router.get('/attach/:cubeId', async (req, res) => {
     let cube = await Cube.findById(req.params.cubeId).lean();
-    let accessories = await Accessory.find().lean();
+    let accessories = await Accessory.find({ _id: { $nin: cube.accessories } }).lean();
 
     res.render('cubes/attach', { cube, accessories })
 });
