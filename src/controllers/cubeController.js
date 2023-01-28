@@ -1,20 +1,23 @@
-const Cube = require('../models/Cube_old');
+const Cube = require('../models/Cube');
 const db = require('../database.json');
 
 exports.getCreateCube = (req, res) => {
     res.render('create');
 }
 
-exports.postCreateCube = (req, res) => {
-    let { name, description, imageUrl, difficultyLevel } = req.body
-    let cube = new Cube(name, description, imageUrl, difficultyLevel);
-    Cube.save(cube);
+exports.postCreateCube = async (req, res) => {
+    let { name, description, imageUrl, difficultyLevel } = req.body;
+
+    let cube = new Cube({ name, description, imageUrl, difficultyLevel });
+
+    await cube.save(cube);
+
     res.redirect('/');
 }
 
-exports.getDetail = (req, res) => {
-    let cubeId = req.params.cubeId;
-    let cube = db.cubes.find(c => c.id == cubeId);
+exports.getDetail = async (req, res) => {
+    let cube = await Cube.findById(req.params.cubeId).lean();
+
     if (cube) {
         res.render('details', cube)
     } else {

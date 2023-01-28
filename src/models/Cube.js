@@ -15,11 +15,11 @@ const cubeSchema = new mongoose.Schema({
         required: true,
         //add http/https validation
     },
-    dificultyLevel: {
+    difficultyLevel: {
         type: Number,
         required: true,
         min: 1,
-        max: 10
+        max: 6
     }
 });
 

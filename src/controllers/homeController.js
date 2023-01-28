@@ -1,11 +1,13 @@
-const db = require('../database.json');
+const Cube = require('../models/Cube');
 
-exports.getHomePage = (req, res) => {
+exports.getHomePage = async (req, res) => {
     let search = req.query.search;
     let minLevel = Number(req.query.from);
     let maxLevel = Number(req.query.to);
-    let cubes = db.cubes;
 
+    let cubes = await Cube.find().lean();
+
+    //TODO: use db filtration
     if (search) {
         cubes = cubes.filter(c => c.name.toLowerCase().includes(search.toLowerCase()));
         if (minLevel) {
