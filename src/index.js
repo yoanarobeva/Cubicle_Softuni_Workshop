@@ -1,4 +1,5 @@
 const express = require('express');
+const cookieParser = require('cookie-parser');
 
 const routes = require('./routes');
 const config = require('./config/config');
@@ -10,6 +11,7 @@ setupViewEngine(app);
 
 app.use(express.static('src/static'));
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 app.use(routes);
 
 initDatabase()
