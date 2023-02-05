@@ -1,12 +1,13 @@
 const router = require('express').Router();
 const Cube = require('../models/Cube');
 const Accessory = require('../models/Accessory');
+const { isAuthenticated } = require('../middleware/authMiddleware');
 
-router.get('/create', (req, res) => {
+router.get('/create', isAuthenticated, (req, res) => {
     res.render('cubes/create');
 });
 
-router.post('/create', async (req, res) => {
+router.post('/create', isAuthenticated, async (req, res) => {
     let { name, description, imageUrl, difficultyLevel } = req.body;
 
     let cube = new Cube({ name, description, imageUrl, difficultyLevel });
