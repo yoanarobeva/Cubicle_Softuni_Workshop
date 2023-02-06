@@ -9,3 +9,5 @@ exports.create = (data) => {
 }
 
 exports.update = (cubeId, data) => Cube.findByIdAndUpdate(cubeId, data, { runValidators: true });
+
+exports.delete = (cubeId) => Cube.findByIdAndDelete(cubeId);
