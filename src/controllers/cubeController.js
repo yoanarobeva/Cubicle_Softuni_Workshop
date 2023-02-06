@@ -1,7 +1,10 @@
 const router = require('express').Router();
-const Cube = require('../models/Cube');
-const Accessory = require('../models/Accessory');
 const { isAuthenticated } = require('../middleware/authMiddleware');
+
+const cubeService = require('../services/cubeService');
+const accessoryService = require('../services/accessoryService');
+
+const cubeUtils = require('../utils/cubeUtils');
 
 router.get('/create', isAuthenticated, (req, res) => {
     res.render('cubes/create');
@@ -10,15 +13,13 @@ router.get('/create', isAuthenticated, (req, res) => {
 router.post('/create', isAuthenticated, async (req, res) => {
     let { name, description, imageUrl, difficultyLevel } = req.body;
 
-    let cube = new Cube({ name, description, imageUrl, difficultyLevel });
-
-    await cube.save(cube);
+    await cubeService.create({ name, description, imageUrl, difficultyLevel });
 
     res.redirect('/');
 })
 
 router.get('/details/:cubeId', async (req, res) => {
-    let cube = await Cube.findById(req.params.cubeId).populate('accessories').lean();
+    let cube = await cubeService.getOne(req.params.cubeId).populate('accessories').lean();
 
     if (cube) {
         res.render('cubes/details', cube);
@@ -28,22 +29,36 @@ router.get('/details/:cubeId', async (req, res) => {
 })
 
 router.get('/attach/:cubeId', async (req, res) => {
-    let cube = await Cube.findById(req.params.cubeId).lean();
-    let accessories = await Accessory.find({ _id: { $nin: cube.accessories } }).lean();
+    let cube = await cubeService.getOne(req.params.cubeId).lean();
+    let accessories = await accessoryService.getAllNotAttached(cube).lean();
 
     res.render('cubes/attach', { cube, accessories })
 });
 
 router.post('/attach/:cubeId', async (req, res) => {
-    const cube = await Cube.findById(req.params.cubeId);
+    const cube = await cubeService.getOne(req.params.cubeId);
     const accessoryId = req.body.accessory
-    const accessory = await Accessory.findById(accessoryId);
+    const accessory = await accessoryService.getOne(accessoryId);
 
     cube.accessories.push(accessoryId);
 
     await cube.save();
 
     res.redirect(`/cube/details/${cube._id}`);
+});
+
+router.get('/edit/:cubeId', async (req, res) => {
+    const cube = await cubeService.getOne(req.params.cubeId).lean();
+    const difficultyLevel = cubeUtils.generateDifficultyLevels(cube.difficultyLevel);
+    
+    res.render('cubes/edit', { cube, difficultyLevel });
+});
+
+router.get('/delete/:cubeId', async (req, res) => {
+    const cube = await cubeService.getOne(req.params.cubeId).lean();
+    const difficultyLevel = cubeUtils.generateDifficultyLevels(cube.difficultyLevel);
+
+    res.render('cubes/delete', {cube, difficultyLevel});
 });
 
 module.exports = router;
