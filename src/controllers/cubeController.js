@@ -50,15 +50,30 @@ router.post('/attach/:cubeId', async (req, res) => {
 router.get('/edit/:cubeId', async (req, res) => {
     const cube = await cubeService.getOne(req.params.cubeId).lean();
     const difficultyLevel = cubeUtils.generateDifficultyLevels(cube.difficultyLevel);
-    
+
     res.render('cubes/edit', { cube, difficultyLevel });
 });
+
+router.post('/edit/:cubeId', async (req, res) => {
+    const { name, description, imageUrl, difficultyLevel } = req.body;
+
+    try {
+
+        await cubeService.update(req.params.cubeId, { name, description, imageUrl, difficultyLevel });
+
+        res.redirect(`/cube/details/${req.params.cubeId}`);
+
+    } catch (error) {
+        console.log(error.message);
+        res.redirect('/404');
+    }
+})
 
 router.get('/delete/:cubeId', async (req, res) => {
     const cube = await cubeService.getOne(req.params.cubeId).lean();
     const difficultyLevel = cubeUtils.generateDifficultyLevels(cube.difficultyLevel);
 
-    res.render('cubes/delete', {cube, difficultyLevel});
+    res.render('cubes/delete', { cube, difficultyLevel });
 });
 
 module.exports = router;

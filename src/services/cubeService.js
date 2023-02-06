@@ -7,3 +7,5 @@ exports.create = (data) => {
 
     return cube.save(cube);
 }
+
+exports.update = (cubeId, data) => Cube.findByIdAndUpdate(cubeId, data, { runValidators: true });
