@@ -21,7 +21,7 @@ router.post('/create', isAuthenticated, async (req, res) => {
 router.get('/details/:cubeId', async (req, res) => {
     let cube = await cubeService.getOne(req.params.cubeId).populate('accessories').lean();
 
-    const isOwner = cube.owner == req.user._id;
+    const isOwner = cubeUtils.isOwner(req.user, cube)
 
     if (cube) {
         res.render('cubes/details', { cube, isOwner });
@@ -53,6 +53,10 @@ router.get('/edit/:cubeId', isAuthenticated, async (req, res) => {
     const cube = await cubeService.getOne(req.params.cubeId).lean();
     const difficultyLevels = cubeUtils.generateDifficultyLevels(cube.difficultyLevel);
 
+    if (!cubeUtils.isOwner(req.user, cube)) {
+        res.redirect('/404');
+    }
+
     res.render('cubes/edit', { cube, difficultyLevels });
 });
 
@@ -74,6 +78,10 @@ router.post('/edit/:cubeId', isAuthenticated, async (req, res) => {
 router.get('/delete/:cubeId', isAuthenticated, async (req, res) => {
     const cube = await cubeService.getOne(req.params.cubeId).lean();
     const difficultyLevels = cubeUtils.generateDifficultyLevels(cube.difficultyLevel);
+
+    if (!cubeUtils.isOwner(req.user, cube)) {
+        res.redirect('/404');
+    }
 
     res.render('cubes/delete', { cube, difficultyLevels });
 });
