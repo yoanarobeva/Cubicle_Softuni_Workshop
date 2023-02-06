@@ -13,7 +13,7 @@ router.get('/create', isAuthenticated, (req, res) => {
 router.post('/create', isAuthenticated, async (req, res) => {
     let { name, description, imageUrl, difficultyLevel } = req.body;
 
-    await cubeService.create({ name, description, imageUrl, difficultyLevel });
+    await cubeService.create({ name, description, imageUrl, difficultyLevel, owner: req.user._id });
 
     res.redirect('/');
 })
@@ -21,8 +21,10 @@ router.post('/create', isAuthenticated, async (req, res) => {
 router.get('/details/:cubeId', async (req, res) => {
     let cube = await cubeService.getOne(req.params.cubeId).populate('accessories').lean();
 
+    const isOwner = cube.owner == req.user._id;
+
     if (cube) {
-        res.render('cubes/details', cube);
+        res.render('cubes/details', { cube, isOwner });
     } else {
         res.redirect('/404');
     }
@@ -47,14 +49,14 @@ router.post('/attach/:cubeId', async (req, res) => {
     res.redirect(`/cube/details/${cube._id}`);
 });
 
-router.get('/edit/:cubeId', async (req, res) => {
+router.get('/edit/:cubeId', isAuthenticated, async (req, res) => {
     const cube = await cubeService.getOne(req.params.cubeId).lean();
     const difficultyLevels = cubeUtils.generateDifficultyLevels(cube.difficultyLevel);
 
     res.render('cubes/edit', { cube, difficultyLevels });
 });
 
-router.post('/edit/:cubeId', async (req, res) => {
+router.post('/edit/:cubeId', isAuthenticated, async (req, res) => {
     const { name, description, imageUrl, difficultyLevel } = req.body;
 
     try {
@@ -69,18 +71,18 @@ router.post('/edit/:cubeId', async (req, res) => {
     }
 })
 
-router.get('/delete/:cubeId', async (req, res) => {
+router.get('/delete/:cubeId', isAuthenticated, async (req, res) => {
     const cube = await cubeService.getOne(req.params.cubeId).lean();
     const difficultyLevels = cubeUtils.generateDifficultyLevels(cube.difficultyLevel);
 
     res.render('cubes/delete', { cube, difficultyLevels });
 });
 
-router.post('/delete/:cubeId', async (req, res) => {
+router.post('/delete/:cubeId', isAuthenticated, async (req, res) => {
     await cubeService.delete(req.params.cubeId);
 
     res.redirect('/');
 });
- 
+
 module.exports = router;
 

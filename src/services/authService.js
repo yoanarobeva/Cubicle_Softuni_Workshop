@@ -18,7 +18,7 @@ exports.login = async (username, password) => {
         throw 'Invalid username ot password!';
     }
 
-    const payload = { username: user.username }
+    const payload = { _id: user._id, username: user.username }
     const token = await jwt.sign(payload, config.SECRET, { expiresIn: '2h' });
 
     return token;
