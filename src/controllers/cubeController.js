@@ -5,6 +5,7 @@ const cubeService = require('../services/cubeService');
 const accessoryService = require('../services/accessoryService');
 
 const cubeUtils = require('../utils/cubeUtils');
+const AppError = require('../utils/appError');
 
 router.get('/create', isAuthenticated, (req, res) => {
     res.render('cubes/create');
@@ -18,16 +19,18 @@ router.post('/create', isAuthenticated, async (req, res) => {
     res.redirect('/');
 })
 
-router.get('/details/:cubeId', async (req, res) => {
-    let cube = await cubeService.getOne(req.params.cubeId).populate('accessories').lean();
+router.get('/details/:cubeId', async (req, res, next) => {
+    try {
+        let cube = await cubeService.getOne(req.params.cubeId).populate('accessories').lean();
 
-    const isOwner = cubeUtils.isOwner(req.user, cube)
+        const isOwner = cubeUtils.isOwner(req.user, cube)
 
-    if (cube) {
         res.render('cubes/details', { cube, isOwner });
-    } else {
-        res.redirect('/404');
+        
+    } catch (error) {
+        next(new AppError('There is not such a cube!'));
     }
+    
 })
 
 router.get('/attach/:cubeId', async (req, res) => {
@@ -49,12 +52,14 @@ router.post('/attach/:cubeId', async (req, res) => {
     res.redirect(`/cube/details/${cube._id}`);
 });
 
-router.get('/edit/:cubeId', isAuthenticated, async (req, res) => {
+const {handleRequest} = require('../utils/requestUtils')
+
+router.get('/edit/:cubeId', isAuthenticated, async (req, res, next) => {
     const cube = await cubeService.getOne(req.params.cubeId).lean();
     const difficultyLevels = cubeUtils.generateDifficultyLevels(cube.difficultyLevel);
 
     if (!cubeUtils.isOwner(req.user, cube)) {
-        res.redirect('/404');
+        next(new AppError('You are not an owner!'));
     }
 
     res.render('cubes/edit', { cube, difficultyLevels });

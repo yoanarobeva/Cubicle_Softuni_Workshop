@@ -12,8 +12,9 @@ router.post('/login', async (req, res) => {
         const token = await authService.login(username, password);
         res.cookie('auth', token, { httpOnly: true });
 
-    } catch (error) {
-        console.log(error.message);
+    } catch (err) {
+        console.log(err.message);
+        return res.render('auth/login', { error: err.message });
     }
 
     return res.redirect('/');
@@ -23,12 +24,12 @@ router.get('/register', (req, res) => {
     res.render('auth/register');
 });
 
-router.post('/register', async (req, res) => {
+router.post('/register', async (req, res, next) => {
     const { username, password, repeatPassword } = req.body;
 
     if (password !== repeatPassword) {
-        alert('Passwords dont match!');
-        return res.redirect('/404');
+        //return next({message: 'Passwords dont match!'});
+        return res.render('auth/register', {error: 'Passwords don\`t match!'})
     }
 
     const existingUser = await authService.getUserByUsername(username);
@@ -44,7 +45,7 @@ router.post('/register', async (req, res) => {
 
 router.get('/logout', (req, res) => {
     res.clearCookie('auth');
-    
+
     res.redirect('/');
 });
 
