@@ -4,11 +4,14 @@ const cubeSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
+        minLength: 5,
+        validate: [/^[a-zA-Z0-9\s]$/, 'Should consist only of English letters, digits and whitespace!'],
     },
     description: {
         type: String,
         required: true,
-        maxLength: 50, //check real length
+        minLength: 20,
+        validate: [/^[a-zA-Z0-9\s]$/, 'Should consist only of English letters, digits and whitespace!'],
     },
     imageUrl: {
         type: String,
