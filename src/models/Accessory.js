@@ -5,7 +5,7 @@ const accessorySchema = new mongoose.Schema({
         type: String,
         required: true,
         minLength: 5,
-        validate: [/^[a-zA-Z0-9\s]$/, 'Should consist only of English letters, digits and whitespace!'],
+        validate: [/^[a-zA-Z0-9\s]+$/, 'Should consist only of English letters, digits and whitespace!'],
     },
     imageUrl: {
         type: String,
@@ -16,7 +16,7 @@ const accessorySchema = new mongoose.Schema({
         type: String,
         required: true,
         minLength: 20,
-        validate: [/^[a-zA-Z0-9\s]$/, 'Should consist only of English letters, digits and whitespace!'],
+        validate: [/^[a-zA-Z0-9\s]+$/, 'Should consist only of English letters, digits and whitespace!'],
     },
 
 });
